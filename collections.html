@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Collections In Action</title>
+
+		<meta name="description" content="介绍jdk中集合类的特征与实现方式">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Collections In Action</h1>
+
+					<!-- <h6>jdk中集合类的特征与实现方式</h6> -->
+					<br/>
+					<p>
+						<small>Created by <a href="http://hakim.se">Li Yuntao</a> / <a href="https://twitter.com/dust_jead">@dust_jead</a></small>
+					</p>
+
+					<p>07/15/2015</p>
+				</section>
+
+				<section>
+					<h2>Overview</h2>
+					<p>
+						本次presentation粗略介绍jdk中常用集合类，关注其特征与实现方式
+					</p>
+				</section>
+
+				<section>
+					<h3>ArrayList</h3>
+					<section>
+						<!-- <h2 style="text-align: left;">List</h2> -->
+						<!-- <h3>ArrayList</h3> -->
+						<ul>
+							<li class="fragment">实现：以数组实现</li>
+							<li class="fragment">优点：内存紧凑节约空间，随机读/写性能高</li>
+							<li class="fragment">缺点：按下标插入/删除性能差，扩容问题</li> 
+							<!-- 超出当前数组容量时会扩容两倍，使用System.arrayCopy()复制到新的数组 -->
+						</ul>
+					</section>
+
+					<section>
+						<p>首次使用，创建大小为10的内部数组</p>
+						<pre><code class="java"  data-trim>
+							/**
+ * Default initial capacity.
+ */
+private static final int DEFAULT_CAPACITY = 10;
+						</code></pre>
+					</section>
+
+					<section>
+						<p>超出当前数组容量时会扩容两倍，使用System.arrayCopy()复制到新的数组</p>
+						<pre><code class="java"  data-trim>
+private void grow(int minCapacity) {
+    // overflow-conscious code
+    int oldCapacity = elementData.length;
+    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);
+    if (newCapacity - minCapacity &lt; 0)
+        newCapacity = minCapacity;
+    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)
+        newCapacity = hugeCapacity(minCapacity);
+    // minCapacity is usually close to size, so this is a win:
+    elementData = Arrays.copyOf(elementData, newCapacity);
+}
+						</code></pre>
+					</section>
+
+					<section>
+						<h3 style="text-align: center;">使用建议</h3>
+						<ul>
+							<li class="fragment">多随机读写，少增删的场景</li>
+							<li class="fragment">在预知最大容量的情况下，使用带参构造方法初始化</li>
+							<li class="fragment">
+								<pre><code class="java"  data-trim>
+// java api
+List lst1 = new ArrayList(xx.size());
+// guava api 传入固定大小
+List lst2 = Lists.newArrayListWithCapacity(initialArraySize);
+// guava api 传入预估大小
+List lst3 = Lists.newArrayListWithExpectedSize(estimatedSize);
+								</code></pre>
+							</li>
+						</ul>
+						<!-- <p class="fragment">tips: <strong color: #fff>随机读/随机写</strong>通常指在数组中的按下标访问</p> -->
+					</section>
+				</section>
+
+				<section>
+					<h3>LinkedList</h3>
+					<section>
+						<ul>
+							<li class="fragment">实现：双向链表</li>
+							<li class="fragment">链表节点(Node)本身使用了更多空间，和额外的指针操作</li>
+							<li class="fragment">按下标访问get(i)/set(i,e) 会从链表的一端迭代移动指针到目标位置（i > size/2时，从尾部开始移）</li>
+							<li class="fragment">链表两端的操作add(), addFirst(), removeLast()由于省去指针移动，性能高</li> 
+						</ul>
+					</section>
+					<section>
+						<h3 style="text-align: center;">使用建议</h3>
+						<ul>
+							<li class="fragment">多增删(非按下标增删)，少随机读写的场景</li>
+							<li class="fragment">LinkedList还实现了Deque/Queue接口，是队列类型的实现类</li>
+							<li class="fragment">
+								<pre><code class="java"  data-trim>
+								Queue queue = new LinkedList();
+								</code></pre>
+							</li>
+						</ul>
+					</section>
+					
+<!-- 					<section>
+						<h2>获取与安装</h2>
+						<p>
+							<li style='float:left'>从 <a href="http://repo.spring.io/libs-release/org/springframework/xd/spring-xd/1.1.1.RELEASE/spring-xd-1.1.1.RELEASE-dist.zip">spring-xd-1.1.1.RELEASE-dist.zip</a> 获取最新的release，当前版本为1.1.1</li>
+							<br>
+							<li style='float:left'>将压缩包解压即可</li>
+						</p>
+					</section> -->
+				</section>
+
+				<section>
+					<h3>CopyOnWriteArrayList</h3>
+					<section>
+						<ul>
+							<li class="fragment">并发优化的ArrayList</li>
+							<li class="fragment">没有<a href="">读锁</a></li>
+							<li class="fragment">使用<a href="#/12">Copy-On-Write</a>策略: 其所有可变操作（add、set 等）都是通过对底层数组进行一次新的复制来实现的，代价昂贵</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3 style="text-align: center;">适用场景</h3>
+						<p>多读少写场景：白/黑名单，商品类目的访问和更新</p>
+					</section>
+
+					<section>
+						<h3 style="text-align: center;">缺点</h3>
+						<ol>
+							<li class="fragment">内存占用: 写操作进行时，被写的旧对象不会回收(被读线程利用)，占用了额外内存</li>
+							<li class="fragment">弱一致性: 由于使用读写分离的思想，COW容器只能保证最终一致; 写入的数据不能保证马上读到</li>
+						</ol>
+					</section>
+				</section>
+
+
+
+				<section>
+					<h3>HashMap</h3>
+					<!-- <img src="collections-in-action-hashmap.jpg" class='fragment'> -->
+					<section>
+						<ul>
+							<li class="fragment">以Entry[]数组实现的哈希桶数组，用Key的哈希值取模桶数组的大小可得到数组下标</li>
+							<li class="fragment">插入时，如果两条Key落在同一个桶，Entry用一个next属性实现多个Entry以单向链表存放，后入桶的Entry将next指向桶当前的Entry</li>
+							<li class="fragment">查找时，先通过hash(key.hashcode())定位到哈希桶，然后以链表遍历桶里所有元素，逐个比较其key值</li>
+							<li class="fragment">rehash: 当Entry数量达到桶数量的75%时，成倍扩容桶数组，并重新分配所有原来的Entry。为了规避扩容开销，最好有个预估值</li>
+						</ul>
+					</section>
+
+					<section>
+						<p>JDK 1.8改动：增加阈值==8，当哈希桶挂在的链表长度超过阈值时，将链表转化为红黑树</p>
+						
+						<pre><code class="java"  data-trim contenteditable>
+
+final void treeifyBin(Node&lt;K,V&gt;[] tab, int hash) {
+    int n, index; Node&lt;K,V&gt; e;
+    if (tab == null || (n = tab.length) &lt; MIN_TREEIFY_CAPACITY)
+        resize();
+    else if ((e = tab[index = (n - 1) &amp; hash]) != null) {
+        TreeNode&lt;K,V&gt; hd = null, tl = null;
+        do {
+            TreeNode&lt;K,V&gt; p = replacementTreeNode(e, null);
+            if (tl == null)
+                hd = p;
+            else {
+                p.prev = tl;
+                tl.next = p;
+            }
+            tl = p;
+        } while ((e = e.next) != null);
+        if ((tab[index] = hd) != null)
+            hd.treeify(tab);
+    }
+}
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<h3>LinkedHashMap</h3>
+					<section>
+						<p>扩展HashMap的Node节点, 实现为一个双向链表</p>
+						<p>iterator()时按Entry的插入顺序来排序</p>
+						<pre>
+							<code class="java"  data-trim contenteditable>
+/**
+ * HashMap.Node subclass for normal LinkedHashMap entries.
+ */
+static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; {
+    Entry&lt;K,V&gt; before, after;
+    Entry(int hash, K key, V value, Node&lt;K,V&gt; next) {
+        super(hash, key, value, next);
+    }
+}
+							</code>
+						</pre>
+					</section>
+				</section>
+
+				<section>
+					<h3>TreeMap</h3>
+					<section>
+						<p>实现：<a href="https://github.com/julycoding/The-Art-Of-Programming-By-July/blob/master/ebook/zh/03.01.md">红黑树</a></p>
+						<p>继承红黑树结构的特性，插入删除最坏耗时O(lgn)</p>
+						<img src="img/collections-in-action-rbtree.png">
+					</section>
+
+					<section>
+						<ul>
+							<li class="fragment">支持iterator()时按Key值排序(自然序 or 比较器)</li>
+							<li class="fragment">留意下TreeMap相对于HashMap多出的若干API</li>
+							<!-- <li class="fragment"> -->
+								<pre class="fragment">
+							<code class="java"  data-trim contenteditable>
+// 取最大最小Key/Entry
+public K firstKey() { return key(getFirstEntry()); }
+public K lastKey() { return key(getLastEntry()); }
+Map.Entry&lt;K,V&gt; firstEntry();
+Map.Entry&lt;K,V&gt; lastEntry();
+
+// 取上一个下一个Key/Entry
+K lowerKey(K key);
+K higherKey(K key);
+Map.Entry&lt;K,V&gt; lowerEntry(K key);
+Map.Entry&lt;K,V&gt; higherEntry(K key);
+
+// 减取TreeMap的片段
+NavigableMap&lt;K,V&gt; subMap(K fromKey, boolean fromInclusive,
+                             K toKey,   boolean toInclusive);
+
+NavigableMap&lt;K,V&gt; headMap(K toKey, boolean inclusive);
+
+NavigableMap&lt;K,V&gt; tailMap(K fromKey, boolean inclusive);
+							</code>
+						</pre>
+							<!-- </li> -->
+						</ul>
+					</section>
+					
+				</section>
+
+				<section>
+					<h3>ConcurrentHashMap</h3>
+					<section>
+						<ul>
+							<li class="fragment">并发优化的HashMap</li>
+							<li class="fragment">结构：Segment[]，每个Segment对象是一个哈希表</li>
+							<li class="fragment">设计思想：分段思想</li>
+							<li class="fragment">并发技术：锁分离(Lock Stripping) </li>
+							<li class="fragment">其他(jdk 1.6)自旋锁/CAS + Immutable + Volatile(happen-before原则)</li>
+<!-- 							<li class="fragment">支持ConcurrentMap接口，如putIfAbsent(key，value)与相反的replace(key，value)与以及实现CAS的replace(key, oldValue, newValue)。</li> -->
+						</ul>
+					</section>
+
+					<section>
+						<pre class="fragment">
+							<h3>分段思想/锁分离</h3>
+							<p>默认16把写锁，当多个线程的访问落在不同的段时，线程间不会存在锁竞争</p>
+							<!-- <p>实现为Segment[]数组，Segment里面才是哈希桶数组，每个Segment一把锁。Key先算出它在哪个Segment里，再算出它在哪个哈希桶里</p> -->
+							<code class="java"  data-trim contenteditable>
+// 默认16把写锁
+Segment&lt;K,V&gt;[] segments = (Segment&lt;K,V&gt;[])new Segment&lt;?,?&gt;[DEFAULT_CONCURRENCY_LEVEL];  
+
+/**
+ * Stripped-down version of helper class used in previous version,
+ * declared for the sake of serialization compatibility
+ */
+static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
+    private static final long serialVersionUID = 2249069246763182397L;
+    final float loadFactor;
+    Segment(float lf) { this.loadFactor = lf; }
+}
+							</code>
+						</pre>
+					</section>
+				</section>
+
+				<section>
+					<h3>ConcurrentSkipListMap</h3>
+					<section>
+						<ul>
+							<li class="fragment">并发优化的SortedMap, 以<a href="http://blog.sina.com.cn/s/blog_72995dcc01017w1t.html">SkipList</a>实现</li>
+							<li class="fragment"><a href="http://blog.sina.com.cn/s/blog_72995dcc01017w1t.html">SkipList</a>是红黑树的简化替代方案</li>
+							<li class="fragment">size()会遍历统计，有开销</li>
+						</ul>
+					</section>
+					<section>
+						<br/>
+						<p class='fragment'>SkipList结构</p>
+						<img src="img/collections-in-action-skiplist.jpg" class='fragment'>
+						<p class='fragment'>SkipList搜索</p>
+						<img src="img/collections-in-action-skiplist-search.jpg" class='fragment'>
+					</section>
+				</section>
+
+				<section>
+					<h3>Set (略)</h3>
+					<section>
+						<p>几乎所有的Set内部都由对应的Map实现，Value是一个假值</p>
+						<ul>
+							<li class="fragment">HashSet：内部是HashMap</li>
+							<li class="fragment">LinkedHashSet：内部是LinkedHashMap</li>
+							<li class="fragment">TreeSet：内部是TreeMap</li>
+							<li class="fragment">ConcurrentSkipListSet：内部是ConcurrentSkipListMap的并发优化的SortedSet</li>
+							<li class="fragment">CopyOnWriteArraySet：内部是CopyOnWriteArrayList的并发优化的Set</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<h3>Queue</h3>
+					<section>
+						<h4>队列的分类</h4>
+						<ul>
+							<li>普通FIFO队列: LinkedList/ArrayDeque</li>
+							<li>优先级队列: PriorityQueue</li>
+							<li>线程安全队列(无锁): ConcurrentLinkedQueue/ConcurrentLinkedDeque</li>
+							<li>
+								<p>线程安全队列(阻塞): ArrayBlockingQueue/LinkedBlockingQueue</p>
+								<p>LinkedBlockingDeque/PriorityBlockingQueue</p>
+							</li>
+
+						</ul>
+					</section>
+				</section>
+
+				<section style="text-align: left;">
+					<h1>THE END</h1>
+					<br/>
+					<h4>参考文档：</h4>
+					<p>
+						- <a href="http://calvin1978.blogcn.com/articles/collection.html">关于Java集合的小抄</a> <br>
+						- <a href="http://coolshell.cn/articles/11175.html">Java中的CopyOnWrite容器</a>
+					</p>
+				</section>
+
+				<section  data-transition="convex" data-background="#4d7e65" data-background-transition="zoom" >
+					<h3>Hidden Part 01: Copy-On-Write</h3>
+					<section>
+						<h3 style="text-align: center;">设计思想</h3>
+						<ul>
+							<img src="img/collections-in-action-cow.jpg" class='fragment'>
+							<li class="fragment">一种用于并发程序设计中的优化策略，利用高并发往往是读多写少的特性，对读操作不加锁</li>
+							<li class="fragment">懒惰策略: 当某个人想要修改这个内容的时候，才会真正把内容Copy出去形成一个新的内容然后再改</li>
+							<li class="fragment">读写分离: 对写操作，先复制一份新的集合，在新的集合上面修改，然后将新集合赋值给旧的引用，并通过volatile 保证其可见性</li>
+						</ul>
+					</section>
+
+					<section>
+						<p><a href="#/4">CopyOnWriteArrayList</a>的add()</p>
+						<pre>
+							<code class="java"  data-trim>
+							    /**
+     * Appends the specified element to the end of this list.
+     *
+     * @param e element to be appended to this list
+     * @return {@code true} (as specified by {@link Collection#add})
+     */
+    public boolean add(E e) {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            Object[] elements = getArray();
+            int len = elements.length;
+            Object[] newElements = Arrays.copyOf(elements, len + 1);
+            newElements[len] = e;
+            setArray(newElements);
+            return true;
+        } finally {
+            lock.unlock();
+        }
+    }	
+							</code>
+						</pre>
+					</section>
+				</section>
+
+<!-- 				<section  data-transition="convex" data-background="#4d7e65" data-background-transition="zoom" >
+					<h3>Hidden Part 02: happen-before</h3>
+					<section>
+						<h3 style="text-align: center;">TODO</h3>
+						<ul>
+							<li class="fragment">TODO</li>
+						</ul>
+					</section>
+				</section> -->
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
