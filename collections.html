@@ -158,7 +158,7 @@ List lst3 = Lists.newArrayListWithExpectedSize(estimatedSize);
 						<ul>
 							<li class="fragment">并发优化的ArrayList</li>
 							<li class="fragment">没有<a href="">读锁</a></li>
-							<li class="fragment">使用<a href="#/12">Copy-On-Write</a>策略: 其所有可变操作（add、set 等）都是通过对底层数组进行一次新的复制来实现的，代价昂贵</li>
+							<li class="fragment">使用<a href="#/13">Copy-On-Write</a>策略: 其所有可变操作（add、set 等）都是通过对底层数组进行一次新的复制来实现的，代价昂贵</li>
 						</ul>
 					</section>
 
@@ -180,7 +180,6 @@ List lst3 = Lists.newArrayListWithExpectedSize(estimatedSize);
 
 				<section>
 					<h3>HashMap</h3>
-					<!-- <img src="collections-in-action-hashmap.jpg" class='fragment'> -->
 					<section>
 						<ul>
 							<li class="fragment">以Entry[]数组实现的哈希桶数组，用Key的哈希值取模桶数组的大小可得到数组下标</li>
@@ -245,7 +244,7 @@ static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; {
 					<section>
 						<p>实现：<a href="https://github.com/julycoding/The-Art-Of-Programming-By-July/blob/master/ebook/zh/03.01.md">红黑树</a></p>
 						<p>继承红黑树结构的特性，插入删除最坏耗时O(lgn)</p>
-						<img src="img/collections-in-action-rbtree.png">
+						<img src="img/collections/collections-in-action-rbtree.png">
 					</section>
 
 					<section>
@@ -330,9 +329,9 @@ static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
 					<section>
 						<br/>
 						<p class='fragment'>SkipList结构</p>
-						<img src="img/collections-in-action-skiplist.jpg" class='fragment'>
+						<img src="img/collections/collections-in-action-skiplist.jpg" class='fragment'>
 						<p class='fragment'>SkipList搜索</p>
-						<img src="img/collections-in-action-skiplist-search.jpg" class='fragment'>
+						<img src="img/collections/collections-in-action-skiplist-search.jpg" class='fragment'>
 					</section>
 				</section>
 
@@ -382,7 +381,7 @@ static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
 					<section>
 						<h3 style="text-align: center;">设计思想</h3>
 						<ul>
-							<img src="img/collections-in-action-cow.jpg" class='fragment'>
+							<img src="img/collections/collections-in-action-cow.jpg" class='fragment'>
 							<li class="fragment">一种用于并发程序设计中的优化策略，利用高并发往往是读多写少的特性，对读操作不加锁</li>
 							<li class="fragment">懒惰策略: 当某个人想要修改这个内容的时候，才会真正把内容Copy出去形成一个新的内容然后再改</li>
 							<li class="fragment">读写分离: 对写操作，先复制一份新的集合，在新的集合上面修改，然后将新集合赋值给旧的引用，并通过volatile 保证其可见性</li>
@@ -390,31 +389,31 @@ static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
 					</section>
 
 					<section>
+						<p><br/></p>
 						<p><a href="#/4">CopyOnWriteArrayList</a>的add()</p>
 						<pre>
 							<code class="java"  data-trim>
-							    /**
-     * Appends the specified element to the end of this list.
-     *
-     * @param e element to be appended to this list
-     * @return {@code true} (as specified by {@link Collection#add})
-     */
     public boolean add(E e) {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             Object[] elements = getArray();
             int len = elements.length;
+
+            // 复制出新数组
             Object[] newElements = Arrays.copyOf(elements, len + 1);
+
+            // 把新元素添加到新数组里
             newElements[len] = e;
+
+            // 把原数组引用指向新数组
             setArray(newElements);
             return true;
         } finally {
             lock.unlock();
         }
-    }	
-							</code>
-						</pre>
+    }	</code></pre>
+						 <p>整个操作是在持有锁的情况下执行的，否则多个线程可能会copy出多份副本出来。</p>
 					</section>
 				</section>
 
