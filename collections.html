@@ -6,7 +6,7 @@
 
 		<title>Collections In Action</title>
 
-		<meta name="description" content="介绍jdk中集合类的特征与实现方式">
+		<meta name="description" content="jdk collections 集合类 特征 实现方式">
 		<meta name="author" content="Hakim El Hattab">
 
 		<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -62,13 +62,10 @@
 				<section>
 					<h3>ArrayList</h3>
 					<section>
-						<!-- <h2 style="text-align: left;">List</h2> -->
-						<!-- <h3>ArrayList</h3> -->
 						<ul>
 							<li class="fragment">实现：以数组实现</li>
 							<li class="fragment">优点：内存紧凑节约空间，随机读/写性能高</li>
 							<li class="fragment">缺点：按下标插入/删除性能差，扩容问题</li> 
-							<!-- 超出当前数组容量时会扩容两倍，使用System.arrayCopy()复制到新的数组 -->
 						</ul>
 					</section>
 
@@ -102,8 +99,8 @@ private void grow(int minCapacity) {
 					<section>
 						<h3 style="text-align: center;">使用建议</h3>
 						<ul>
-							<li class="fragment">多随机读写，少增删的场景</li>
-							<li class="fragment">在预知最大容量的情况下，使用带参构造方法初始化</li>
+							<li class="fragment">利用数组优势：多随机读写，少增删的场景</li>
+							<li class="fragment">减少扩容开销：在预知最大容量的情况下，使用带参构造方法初始化</li>
 							<li class="fragment">
 								<pre><code class="java"  data-trim>
 // java api
@@ -111,8 +108,7 @@ List lst1 = new ArrayList(xx.size());
 // guava api 传入固定大小
 List lst2 = Lists.newArrayListWithCapacity(initialArraySize);
 // guava api 传入预估大小
-List lst3 = Lists.newArrayListWithExpectedSize(estimatedSize);
-								</code></pre>
+List lst3 = Lists.newArrayListWithExpectedSize(estimatedSize);</code></pre>
 							</li>
 						</ul>
 						<!-- <p class="fragment">tips: <strong color: #fff>随机读/随机写</strong>通常指在数组中的按下标访问</p> -->
@@ -141,15 +137,6 @@ List lst3 = Lists.newArrayListWithExpectedSize(estimatedSize);
 							</li>
 						</ul>
 					</section>
-					
-<!-- 					<section>
-						<h2>获取与安装</h2>
-						<p>
-							<li style='float:left'>从 <a href="http://repo.spring.io/libs-release/org/springframework/xd/spring-xd/1.1.1.RELEASE/spring-xd-1.1.1.RELEASE-dist.zip">spring-xd-1.1.1.RELEASE-dist.zip</a> 获取最新的release，当前版本为1.1.1</li>
-							<br>
-							<li style='float:left'>将压缩包解压即可</li>
-						</p>
-					</section> -->
 				</section>
 
 				<section>
@@ -249,6 +236,7 @@ static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; {
 
 					<section>
 						<ul>
+							<li><br/></li>
 							<li class="fragment">支持iterator()时按Key值排序(自然序 or 比较器)</li>
 							<li class="fragment">留意下TreeMap相对于HashMap多出的若干API</li>
 							<!-- <li class="fragment"> -->
@@ -272,8 +260,7 @@ NavigableMap&lt;K,V&gt; subMap(K fromKey, boolean fromInclusive,
 
 NavigableMap&lt;K,V&gt; headMap(K toKey, boolean inclusive);
 
-NavigableMap&lt;K,V&gt; tailMap(K fromKey, boolean inclusive);
-							</code>
+NavigableMap&lt;K,V&gt; tailMap(K fromKey, boolean inclusive);</code>
 						</pre>
 							<!-- </li> -->
 						</ul>
