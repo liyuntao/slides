@@ -235,8 +235,8 @@ static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; {
 					</section>
 
 					<section>
+						<br/>
 						<ul>
-							<li><br/></li>
 							<li class="fragment">支持iterator()时按Key值排序(自然序 or 比较器)</li>
 							<li class="fragment">留意下TreeMap相对于HashMap多出的若干API</li>
 							<!-- <li class="fragment"> -->
@@ -260,8 +260,7 @@ NavigableMap&lt;K,V&gt; subMap(K fromKey, boolean fromInclusive,
 
 NavigableMap&lt;K,V&gt; headMap(K toKey, boolean inclusive);
 
-NavigableMap&lt;K,V&gt; tailMap(K fromKey, boolean inclusive);</code>
-						</pre>
+NavigableMap&lt;K,V&gt; tailMap(K fromKey, boolean inclusive);</code></pre>
 							<!-- </li> -->
 						</ul>
 					</section>
@@ -282,13 +281,14 @@ NavigableMap&lt;K,V&gt; tailMap(K fromKey, boolean inclusive);</code>
 					</section>
 
 					<section>
-						<pre class="fragment">
-							<h3>分段思想/锁分离</h3>
-							<p>默认16把写锁，当多个线程的访问落在不同的段时，线程间不会存在锁竞争</p>
-							<!-- <p>实现为Segment[]数组，Segment里面才是哈希桶数组，每个Segment一把锁。Key先算出它在哪个Segment里，再算出它在哪个哈希桶里</p> -->
-							<code class="java"  data-trim contenteditable>
+<!-- 						<pre class="fragment"> -->
+						<p>分段思想/锁分离</p>
+						<p>默认16把写锁，当多个线程的访问落在不同的段时，线程间不会存在锁竞争</p>
+						<!-- <p>实现为Segment[]数组，Segment里面才是哈希桶数组，每个Segment一把锁。Key先算出它在哪个Segment里，再算出它在哪个哈希桶里</p> -->
+						<pre><code class="java" data-trim contenteditable>
 // 默认16把写锁
-Segment&lt;K,V&gt;[] segments = (Segment&lt;K,V&gt;[])new Segment&lt;?,?&gt;[DEFAULT_CONCURRENCY_LEVEL];  
+Segment&lt;K,V&gt;[] segments = (Segment&lt;K,V&gt;[])
+			new Segment&lt;?,?&gt;[DEFAULT_CONCURRENCY_LEVEL];  
 
 /**
  * Stripped-down version of helper class used in previous version,
@@ -298,7 +298,7 @@ static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
     private static final long serialVersionUID = 2249069246763182397L;
     final float loadFactor;
     Segment(float lf) { this.loadFactor = lf; }
-}
+}				
 							</code>
 						</pre>
 					</section>
