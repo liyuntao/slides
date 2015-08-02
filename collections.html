@@ -304,7 +304,7 @@ static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
 					</section>
 				</section>
 
-				<section>
+				<section data-transition="zoom">
 					<h3>ConcurrentSkipListMap</h3>
 					<section>
 						<ul>
@@ -330,7 +330,7 @@ static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
 							<li class="fragment">HashSet：内部是HashMap</li>
 							<li class="fragment">LinkedHashSet：内部是LinkedHashMap</li>
 							<li class="fragment">TreeSet：内部是TreeMap</li>
-							<li class="fragment">ConcurrentSkipListSet：内部是ConcurrentSkipListMap的并发优化的SortedSet</li>
+							<li class="fragment">ConcurrentSkipListSet：并发优化的SortedSet, 内部是ConcurrentSkipListMap</li>
 							<li class="fragment">CopyOnWriteArraySet：内部是CopyOnWriteArrayList的并发优化的Set</li>
 						</ul>
 					</section>
