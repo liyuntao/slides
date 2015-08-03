@@ -145,7 +145,7 @@ List lst3 = Lists.newArrayListWithExpectedSize(estimatedSize);</code></pre>
 						<ul>
 							<li class="fragment">并发优化的ArrayList</li>
 							<li class="fragment">没有<a href="">读锁</a></li>
-							<li class="fragment">使用<a href="#/13">Copy-On-Write</a>策略: 其所有可变操作（add、set 等）都是通过对底层数组进行一次新的复制来实现的，代价昂贵</li>
+							<li class="fragment">使用<a href="#/14">Copy-On-Write</a>策略: 其所有可变操作（add、set 等）都是通过对底层数组进行一次新的复制来实现的，代价昂贵</li>
 						</ul>
 					</section>
 
@@ -349,6 +349,27 @@ static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
 								<p>LinkedBlockingDeque/PriorityBlockingQueue</p>
 							</li>
 
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<h3>ArrayDeque</h3>
+					<section>
+						<ul>
+							<li class="fragment">由循环数组构成的双向队列，线程不安全</li>
+							<li class="fragment">增删改查通常都为常数时间</li>
+							<li class="fragment">add元素：当tail指针追上head时，会扩容(×2)</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3 style="text-align: center;">使用建议</h3>
+						<ul>
+							<li class="fragment">线程不安全</li>
+							<li class="fragment">减少扩容开销：同<a href="#/2">ArrayList</a> </li>
+							<li class="fragment"><blockquote>This class is likely to be faster than Stack when used as a stack, and faster than LinkedList when used as a queue.</blockquote></li>
+							<li class="fragment">根据文档中的话，建议使用这个类全面替代<a href="#/3">LinkedList</a> </li>
 						</ul>
 					</section>
 				</section>
