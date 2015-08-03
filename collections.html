@@ -145,7 +145,7 @@ List lst3 = Lists.newArrayListWithExpectedSize(estimatedSize);</code></pre>
 						<ul>
 							<li class="fragment">并发优化的ArrayList</li>
 							<li class="fragment">没有<a href="">读锁</a></li>
-							<li class="fragment">使用<a href="#/14">Copy-On-Write</a>策略: 其所有可变操作（add、set 等）都是通过对底层数组进行一次新的复制来实现的，代价昂贵</li>
+							<li class="fragment">使用<a href="#/15">Copy-On-Write</a>策略: 其所有可变操作（add、set 等）都是通过对底层数组进行一次新的复制来实现的，代价昂贵</li>
 						</ul>
 					</section>
 
@@ -369,8 +369,48 @@ static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
 							<li class="fragment">线程不安全</li>
 							<li class="fragment">减少扩容开销：同<a href="#/2">ArrayList</a> </li>
 							<li class="fragment"><blockquote>This class is likely to be faster than Stack when used as a stack, and faster than LinkedList when used as a queue.</blockquote></li>
-							<li class="fragment">根据文档中的话，建议使用这个类全面替代<a href="#/3">LinkedList</a> </li>
+							<li class="fragment">根据JDK文档中的话，建议在Stack/Queue用途中，使用这个类全面替代<a href="#/3">LinkedList</a> </li>
 						</ul>
+					</section>
+				</section>
+
+				<section>
+					<h3>附录：阻塞队列API</h3>
+					<section>
+						<table>
+							<thead>
+								<tr bgcolor="#4f81bc">
+									<th>方法\处理方式</th>
+									<th>抛出异常</th>
+									<th>返回特殊值</th>
+									<th>一直阻塞</th>
+									<th>超时退出</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>插入方法</td>
+									<td>add(e)</td>
+									<td>offer(e)</td>
+									<td>put(e)</td>
+									<td>offer(e,time,unit)</td>
+								</tr>
+								<tr>
+									<td>移除方法</td>
+									<td>remove()</td>
+									<td>poll()</td>
+									<td>take()</td>
+									<td>poll(time,unit)</td>
+								</tr>
+								<tr>
+									<td>检查方法</td>
+									<td>element()</td>
+									<td>peek()</td>
+									<td>不可用</td>
+									<td>不可用</td>
+								</tr>
+							</tbody>
+						</table>
 					</section>
 				</section>
 
