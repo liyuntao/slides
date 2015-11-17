@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Spring XD - 流处理</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Spring XD</h1>
+
+					<h5>分布式、实时数据流分析工具</h5>
+					<br/>
+					<p>
+						<small>Created by <a href="http://hakim.se">Li Yuntao</a> / <a href="https://twitter.com/dust_jead">@dust_jead</a></small>
+					</p>
+
+					<p>04/17/2015</p>
+				</section>
+
+				<section>
+					<h2>Overview</h2>
+					<p>
+						<a href="http://projects.spring.io/spring-xd/">Spring XD</a> 是一个统一的、分布式、可扩展的服务。它用于数据获取、实时分析、批量处理、数据导出。
+					</p>
+				</section>
+
+				<section>
+					<h2>Use Cases</h2>
+					<ul>
+						<li class="fragment">从多种输入源进行高吞吐量的数据获取和存储</li>
+						<li class="fragment">在获取数据的同时进行实时分析</li>
+						<li class="fragment">通过批处理作业进行流程管理。作业(Jobs)与标准的企业系统交互</li>
+						<li class="fragment">高吞吐量的数据导出 e.g. from HDFS to a RDBMS or NoSQL database.</li>
+					</ul>
+				</section>
+
+				<section>
+					<section>
+						<h2>Getting Started</h2>
+					</section>
+					<section>
+						<h2>运行环境</h2>
+						<p>Java JDK7 或更高版本</p>
+					</section>
+					<section>
+						<h2>获取与安装</h2>
+						<p>
+							<li style='float:left'>从 <a href="http://repo.spring.io/libs-release/org/springframework/xd/spring-xd/1.1.1.RELEASE/spring-xd-1.1.1.RELEASE-dist.zip">spring-xd-1.1.1.RELEASE-dist.zip</a> 获取最新的release，当前版本为1.1.1</li>
+							<br>
+							<li style='float:left'>将压缩包解压即可</li>
+						</p>
+					</section>
+					<section>
+						<h2>启动</h2>
+						<p>Spring XD 有两种运行模式，single-node和multi-node</p>
+						<br>
+						<ul style="text-align: left;">
+							<li>single-node是由单独的进程负责所有处理和管理的工作。用于入门、应用程序的快速开发和测试。</li>
+							<li>multi-node是分布式模式，用于生产环境</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<h2>Spring XD 结构</h2>
+					<p>
+					<a href="http://docs.spring.io/spring-xd/docs/1.1.1.RELEASE/reference/html/#redhatcentos-installation">Guide</a>
+					</p>
+				</section>
+
+				<section>
+					<h2><a href="http://www.eaipatterns.com/WireTap.html">Wire Tap</a> 模式</h2>
+					<p class='fragment'>
+						点对点通道通常用于文档消息因为他们保证只有一个消费者将消费每条消息。然而，对于测试、监控与调试，需要使用某种途径可以获取所有穿过通道的消息。
+					</p>
+					<img src="img/springXD/spring-xd-03.gif" class='fragment'>
+					<p class='fragment'>
+					 Wire tap 模式通过在信道中插入一个收件人列表，当消息流过时，分发给主信道和辅助信道。
+					</p>
+				</section>
+
+				<section data-transition="convex" data-background="#4d7e65" data-background-transition="zoom" >
+					<section>
+						<h2>领域概念</h2>
+						<li>Stream</li>
+						<li>Module</li>
+					</section>
+
+					<section>
+						<h2>Stream</h2>
+						<p>
+							在 Spring XD 中, 流被定义为由事件驱动的数据，从一个Source到Sink，中间可以经过任意数量的Processor. 
+						</p>
+						<p>
+							流处理在XD容器中进行，而流的定义和部署经由 XD Admin Server 完成。 
+						</p>
+					</section>
+					<section>
+						<h2>Modules</h2>
+						<p>
+							模块由类型分类，可以由名称和分类轻易的区分模块的作用和功能。
+						</p>
+						<p>
+							在当前版本，Module包括<STRONG>source</STRONG>, <STRONG>sink</STRONG>, <STRONG>processor</STRONG>和<STRONG>job</STRONG>
+						</p>
+					</section>
+					<section>
+						<h2>Modules</h2>
+						<img src="img/springXD/spring-xd-05.png" class='fragment'>
+					</section>
+					<section>
+						<h2>Modules</h2>
+						<ul>
+							<li>Source: 源通过轮询外部资源，或者由事件触发。它只提供输出。在一个流定义中，第一个模块必须是源。</li>
+
+							<li>Processor: 处理器用于执行某特定类型的任务，它使用消息作为输入并产生一个新的消息。因此它即需要输入也需要输出。</li>
+
+							<li>Sink: 消费输入的消息并将数据输出到外部资源，最终终止该流。</li>
+
+							<li>A job module implements a Spring Batch job enabled for Spring XD.</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Shell commands</h2>
+					</section>
+					<section>
+						<h2>Pipes and filters</h2>
+						<p>
+							A simple linear stream consists of a sequence of modules. Typically an Input Source, (optional) Processing Steps, and an Output Sink. As a simple example consider the collection of data from an HTTP Source writing to a File Sink. Using the DSL the stream description is:
+						</p>
+					</section>
+					<section>
+						<h2>Module parameters</h2>
+						<p>
+							Each module may take parameters. The parameters supported by a module are defined by the module implementation. As an example the http source module exposes port setting which allows the data ingestion port to be changed from the default value.
+						</p>
+					</section>
+					<section>
+						<h2>Module parameters</h2>
+						<p>
+							Streams are composed of modules which encapsulate a unit of work into a reusable component. A job in Spring XD must also be implemented as a module.
+						</p>
+					</section>
+					<section>
+						<h2>Named channels</h2>
+						<p>
+							Streams are composed of modules which encapsulate a unit of work into a reusable component. A job in Spring XD must also be implemented as a module.
+						</p>
+					</section>
+					<section>
+						<h2>其他</h2>
+						<p>
+							Labels, Single quotes, Double quotes, Escaping
+						</p>
+					</section>
+				</section>
+
+				<section>
+					<h2>Demo展示01</h2>
+					<p>
+						<small>启动runtime;启动shell;创建一个简单的流：ticktock; 查看Admin UI</small>
+					</p>
+					<ul>
+						<li class='fragment'>
+							<p>启动流：</p>
+							<pre ><code>xd:> stream create --name ticktock --definition "time | log" --deploy</code></pre>
+						</li>
+
+						<br/>
+
+						<li class='fragment'>
+							<p>销毁流：</p>
+							<pre ><code>xd:>stream destroy --name ticktock</code></pre>
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Demo展示02</h2>
+					<p>
+						基于twitter stream API 的实时分析
+					</p>
+					<img src="img/springXD/spring-xd-twitter-demo.png">
+				</section>
+
+				<section style="text-align: left;">
+					<h1>THE END</h1>
+					<br/>
+					<h4>参考文档：</h4>
+					<p>
+						- <a href="http://docs.spring.io/spring-xd/docs/1.1.1.RELEASE/reference/html/">Spring XD Guide</a> <br>
+						- <a href="http://blog.pivotal.io/pivotal/products/spring-xd-for-real-time-analytics">HOWTO: Spring XD for Real Time Analytics With Twitter Example Code</a>
+					</p>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
