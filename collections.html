@@ -275,7 +275,7 @@ NavigableMap&lt;K,V&gt; tailMap(K fromKey, boolean inclusive);</code></pre>
 							<li class="fragment">结构：Segment[]，每个Segment对象是一个哈希表</li>
 							<li class="fragment">设计思想：分段思想</li>
 							<li class="fragment">并发技术：锁分离(Lock Stripping) </li>
-							<li class="fragment">其他(jdk 1.6)自旋锁/CAS + Immutable + Volatile(happen-before原则)</li>
+							<li class="fragment">其他(jdk 1.6)自旋 + Immutable + Volatile(happen-before原则)</li>
 <!-- 							<li class="fragment">支持ConcurrentMap接口，如putIfAbsent(key，value)与相反的replace(key，value)与以及实现CAS的replace(key, oldValue, newValue)。</li> -->
 						</ul>
 					</section>
@@ -421,6 +421,7 @@ static class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable {
 					<p>
 						- <a href="http://calvin1978.blogcn.com/articles/collection.html">关于Java集合的小抄</a> <br>
 						- <a href="http://coolshell.cn/articles/11175.html">Java中的CopyOnWrite容器</a>
+						- <a href="http://java-performance.info/primitive-types-collections-trove-library/">Java Performance Tuning Guide</a>
 					</p>
 				</section>
 
